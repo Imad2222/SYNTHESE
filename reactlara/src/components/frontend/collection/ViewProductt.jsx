@@ -108,7 +108,7 @@ function ViewProductt() {
     if (productCount) 
     {
       showProductList = product.map((item, index) => (
-        <Box key={index} sx={{ width: '100%', maxWidth: '25%', p: 2, boxSizing: 'border-box' }}>
+        <Box key={index} sx={{ width: '100%', maxWidth: '33%', p: 2, boxSizing: 'border-box' }}>
           <Box sx={{ p: 2, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', borderRadius: '8px', '&:hover': { boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)' } }}>
             <Link to={`/collection/${item.category.slug}/${item.slug}`} style={{ textDecoration: 'none' }}>
               <img src={`http://127.0.0.1:8000/${item.image}`} alt={item.slug} style={{ width: '100%', height: '200px', objectFit: 'cover' }} />

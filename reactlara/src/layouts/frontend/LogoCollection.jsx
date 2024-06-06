@@ -19,7 +19,7 @@ const LogoCollection = () => {
         align="center"
         color="text.secondary"
       >
-        Our Services
+       
       </Typography>
       <Grid container justifyContent="center" sx={{ mt: 0.5, opacity: 0.6 }}>
         <Grid item>
