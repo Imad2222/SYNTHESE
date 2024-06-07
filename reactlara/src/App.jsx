@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import MasterLayout from "./layouts/admin/MasterLayout";
 import Dashboard from "./components/admin/Dashboard";
 import Profile from "./components/admin/Profile";
@@ -27,24 +27,23 @@ import ForgotPassword from "./PSF/ForgotPassword";
 import ResetPassword from "./PSF/ResetPassword";
 import Tky from "./Tky";
 
-
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = "http://127.0.0.1:8000/";
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 axios.defaults.headers.post['Accept'] = 'application/json';
 
 function App() {
-
-
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Effacer le jeton d'authentification au chargement de l'application
+    localStorage.removeItem('auth_token'); // ligne  li zadt 
+
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('auth_token');
         if (token) {
-          // Ajouter le jeton d'authentification dans le header de la requête
           const res = await axios.get('/api/checkingAuthenticated', {
             headers: {
               Authorization: `Bearer ${token}`
@@ -55,7 +54,6 @@ function App() {
             setAuthenticated(true);
           }
         } else {
-          // Gérer le cas où il n'y a pas de jeton d'authentification
           console.log("No authentication token found.");
         }
       } catch (error) {
@@ -68,18 +66,10 @@ function App() {
     fetchData();
   }, []);
 
-
-
-
   useEffect(() => {
     const axiosInterceptor = axios.interceptors.response.use(undefined, function axiosRetryInterceptor(err) {
       if (err.response.status === 401) {
-        // Swal.fire({
-        //   icon: "error",
-        //   title: "Oops...",
-        //   text: err.response.data.message,
-        // });
-        console.log('Unauthorized'); // Ou affichez l'alerte ici 
+        console.log('Unauthorized');
       }
       return Promise.reject(err);
     });
@@ -89,24 +79,15 @@ function App() {
     };
   }, []);
 
-  
-
-
-  // je veux faire un function pour rediger 403 et 404 a l'utilisateur avec des alert 
-
   axios.interceptors.response.use(function(response) {
     return response;
   }, function(error) {
     if (error.response.status === 403) {
-      // Vérifiez si l'erreur provient de la requête vers /api/checkingAuthenticated
-      // if (window.location.pathname !== '/') {
-      //   // Affichez l'alerte uniquement si l'utilisateur n'est pas sur la page d'accueil
-      //   Swal.fire({
-      //     icon: "error",
-      //     title: "Oops...",
-      //     text: 'Access Denied',
-      //   });
-      // }
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: 'Access Denied',
+      });
     } else if (error.response.status === 404) {
       Swal.fire({
         icon: "error",
@@ -116,11 +97,7 @@ function App() {
     }
     return Promise.reject(error);
   });
-  
 
-
-
-  
   return (
     <div className="App">
       {loading ? (
@@ -128,38 +105,30 @@ function App() {
       ) : (
         <Router>
           <Routes>
-
             <Route path="*" element={<NotFound />} />
-            {/* <Route path="/" element={<Home />} /> */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={localStorage.getItem('auth_token') ? <Navigate to="/" /> : <Login />} />
             <Route path="/register" element={localStorage.getItem('auth_token') ? <Navigate to="/" /> : <Register />} />
-
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-
-
-            <Route path="/collection" element={<ViewCategoryy/>}/>
-            <Route path="/collection/:slug" element={<ViewProductt/>} />
-            <Route path="/collection/:category_slug/:product_slug" element={<ProductDetail/>}/>
-            <Route path="/cart" element={<Cart/>} />
-            <Route path="/checkout" element={<Checkout/>}/>
-            <Route path="/thank-you" element={<Tky/>} />
-
+            <Route path="/collection" element={<ViewCategoryy />} />
+            <Route path="/collection/:slug" element={<ViewProductt />} />
+            <Route path="/collection/:category_slug/:product_slug" element={<ProductDetail />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/thank-you" element={<Tky />} />
             <Route path='/admin' element={authenticated ? <MasterLayout /> : <Navigate to="/login" />}>
               <Route index element={<Navigate to="dashboard" />} />
-              <Route path="dashboard" element={<Dashboard />} /> 
+              <Route path="dashboard" element={<Dashboard />} />
               <Route path="add-Category" element={<Category />} />
-              <Route path="edit-category/:id" element={< EditCategory /> }/>
-              <Route path="view-category" element={<ViewCategory />}/>
-
+              <Route path="edit-category/:id" element={<EditCategory />} />
+              <Route path="view-category" element={<ViewCategory />} />
               <Route path="add-product" element={<AddProduct />} />
-              <Route path="view-product" element={<ViewProduct/>}/>
+              <Route path="view-product" element={<ViewProduct />} />
               <Route path="edit-product/:id" element={<EditProduct />} />
               <Route path="profile" element={<Profile />} />
               <Route path="dashboard/view-order/:id" element={<ViewOrd />} />
             </Route>
-
           </Routes>
         </Router>
       )}

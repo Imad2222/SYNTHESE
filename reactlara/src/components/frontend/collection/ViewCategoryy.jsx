@@ -1,13 +1,12 @@
-import * as React from 'react';
+import  { useEffect, useState } from 'react';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
 import Load from '../../../Load';
-import { Link, useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 import Navbar from '../../../layouts/frontend/Navbar';
 import PropTypes from 'prop-types';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -16,6 +15,7 @@ import getLPTheme from '../../../component/getLPTheme';
 import CategoryIcon from '@mui/icons-material/Category';
 import Photo from '../../../images/CATGR2.png';
 import Footer from '../../../layouts/frontend/Footer';
+
 function ToggleCustomTheme() {
   return (
     <Box
@@ -40,19 +40,28 @@ ToggleCustomTheme.propTypes = {
 };
 
 export default function ViewCategoryy() {
-
   const navigate = useNavigate();
-
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState([]);
-
-  const [mode, setMode] = React.useState('light');
-  const [showCustomTheme, setShowCustomTheme] = React.useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [mode, setMode] = useState('light');
+  const [showCustomTheme, setShowCustomTheme] = useState(true);
   const LPtheme = createTheme(getLPTheme(mode));
   const defaultTheme = createTheme({ palette: { mode } });
 
-  const handleImageClick = () => {
-    navigate('/login');
+  useEffect(() => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      setAuthenticated(true);
+    }
+  }, []);
+
+  const handleImageClick = (slug) => {
+    if (!authenticated) {
+      navigate('/login');
+    } else {
+      navigate(`/collection/${slug}`);
+    }
   };
 
   useEffect(() => {
@@ -79,12 +88,10 @@ export default function ViewCategoryy() {
     );
   } else {
     var showCategoryList = category.map((item, index) => (
-      <Box key={index} sx={{ width: '100%', maxWidth: '50%', p: 2, boxSizing: 'border-box' }} className="categoryBox"  onClick={handleImageClick}>
+      <Box key={index} sx={{ width: '100%', maxWidth: '50%', p: 2, boxSizing: 'border-box' }} className="categoryBox" onClick={() => handleImageClick(item.slug)}>
         <Box sx={{ p: 2, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', borderRadius: '8px', '&:hover': { boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)' } }}>
-          <Link to={`/collection/${item.slug}`} style={{ textDecoration: 'none' }}>
-            <img src={Photo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            <Typography variant="h5" style={{ marginTop: '8px' }}>{item.slug}</Typography>
-          </Link>
+          <img src={Photo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <Typography variant="h5" style={{ marginTop: '8px' }}>{item.slug}</Typography>
         </Box>
       </Box>
     ));
