@@ -89,7 +89,7 @@ export default function Footer() {
               Newsletter
             </Typography>
             <Typography variant="body2" color="text.secondary" mb={2}>
-              Subscribe to our newsletter for weekly updates and promotions.
+              Contact Us 
             </Typography>
             <form onSubmit={handleSubmit}>
             <Stack direction="column" spacing={1} useFlexGap>
